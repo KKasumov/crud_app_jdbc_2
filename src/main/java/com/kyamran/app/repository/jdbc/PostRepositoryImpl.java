@@ -60,43 +60,20 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Post getById(Long id) {
-        Post post = null;
-        Map<Long, Label> labelsMap = new HashMap<>();
-
         try (PreparedStatement preparedStatement = DBUtils.getPreparedStatementWithKeys("SELECT * FROM Posts p LEFT JOIN Post_Labels pl ON p.id = pl.PostID LEFT JOIN Labels l ON l.id = pl.LabelID WHERE p.ID = ?")) {
             preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    if (post == null) {
-                        String content = resultSet.getString("Content");
-                        String created = resultSet.getString("Created");
-                        String updated = resultSet.getString("Updated");
-                        String postStatus = resultSet.getString("PostStatus");
-                        Long writerId = resultSet.getLong("WriterId");
-
-                        post = new Post(id, content, created, updated, PostStatus.valueOf(postStatus), writerId, new ArrayList<>());
-                    }
-
-                    Long labelId = resultSet.getLong("l.id");
-                    if (!resultSet.wasNull()) {
-                        String labelName = resultSet.getString("l.name");
-                        Label label = labelsMap.get(labelId);
-
-                        if (label == null) {
-                            label = new Label(labelId, labelName);
-                            labelsMap.put(labelId, label);
-                        }
-
-                        post.getLabels().add(label);
-                    }
+                List<Post> posts = mapResultSetToPostList(resultSet);
+                if (!posts.isEmpty()) {
+                    return posts.get(0);
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-        return post;
+        return Post.builder().build();
     }
+
 
 
     @Override
@@ -112,43 +89,15 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public List<Post> getAll() {
-        Map<Long, Post> postMap = new HashMap<>();
-        Map<Long, Label> labelMap = new HashMap<>();
-
         try (Connection connection = DBUtils.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM Posts p LEFT JOIN Post_Labels pl ON p.id = pl.PostID LEFT JOIN Labels l ON l.id = pl.LabelID")) {
-            while (resultSet.next()) {
-                Long id = resultSet.getLong("p.ID");
-
-                if(!postMap.containsKey(id)) {
-                    String content = resultSet.getString("p.Content");
-                    String created = resultSet.getString("p.Created");
-                    String updated = resultSet.getString("p.Updated");
-                    String postStatus = resultSet.getString("p.PostStatus");
-                    Long writerId = resultSet.getLong("p.WriterId");
-
-                    List<Label> labels = new ArrayList<>();
-                    Post post = new Post(id, content, created, updated, PostStatus.valueOf(postStatus), writerId, labels);
-                    postMap.put(id, post);
-                }
-
-                Long labelId = resultSet.getLong("l.id");
-                if (!resultSet.wasNull()) {
-                    String labelName = resultSet.getString("l.name");
-                    Label label = labelMap.get(labelId);
-                    if (label == null) {
-                        label = new Label(labelId, labelName);
-                        labelMap.put(labelId, label);
-                    }
-                    postMap.get(id).getLabels().add(label);
-                }
-            }
+            return mapResultSetToPostList(resultSet);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            // Возвращаем пустой список в случае ошибки. Возможно, стоит изменить этот подход.
+            return Collections.emptyList();
         }
-
-        return new ArrayList<>(postMap.values());
     }
 
 
@@ -198,5 +147,4 @@ public class PostRepositoryImpl implements PostRepository {
 
         return new ArrayList<>(postMap.values());
     }
-
 }

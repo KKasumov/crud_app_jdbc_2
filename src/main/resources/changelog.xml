@@ -1,83 +1,79 @@
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
-http://www.liquibase.org/xml/ns/dbchangelog
-https://www.liquibase.org/xml/ns/dbchangelog
-http://www.liquibase.org/xml/ns/dbchangelog ">
-<changeSet id="1" author="kyamran" runOnChange="true">
-    <createTable tableName="Labels">
-        <column name="ID" type="INT" autoIncrement="true">
-            <constraints primaryKey="true" nullable="false"/>
-        </column>
-        <column name="Name" type="VARCHAR(32)">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
-</changeSet>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
-<changeSet id="2" author="kyamran" runOnChange="true">
-    <createTable tableName="Writers">
-        <column name="ID" type="BIGINT" autoIncrement="true">
-            <constraints primaryKey="true" nullable="false"/>
-        </column>
-        <column name="FirstName" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="LastName" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
-</changeSet>
+    <changeSet id="1" author="kyamran" runOnChange="true">
+        <createTable tableName="Labels">
+            <column name="ID" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="Name" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
-<changeSet id="3" author="kyamran" runOnChange="true">
-    <createTable tableName="Posts">
-        <column name="ID" type="BIGINT" autoIncrement="true">
-            <constraints primaryKey="true" nullable="false"/>
-        </column>
-        <column name="Content" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="Created" type="DATE">
-            <constraints nullable="false"/>
-        </column>
-        <column name="Updated" type="DATE">
-            <constraints nullable="false"/>
-        </column>
-        <column name="PostStatus" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="WriterId" type="BIGINT">
-            <constraints nullable="true"/>
-        </column>
-    </createTable>
-</changeSet>
+    <changeSet id="2" author="kyamran" runOnChange="true">
+        <createTable tableName="Writers">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="FirstName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LastName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
-<changeSet id="4" author="kyamran" runOnChange="true">
-    <createTable tableName="Post_Labels">
-        <column name="PostID" type="BIGINT">
-            <constraints nullable="false"/>
-        </column>
-        <column name="LabelID" type="INT">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
-</changeSet>
+    <changeSet id="3" author="kyamran" runOnChange="true">
+        <createTable tableName="Posts">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="Content" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Created" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Updated" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PostStatus" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WriterId" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
 
-<changeSet id="5" author="kyamran" runOnChange="true">
-    <addForeignKeyConstraint constraintName="fk_posts_writers"
-                             baseTableName="Posts" baseColumnNames="WriterId"
-                             referencedTableName="Writers" referencedColumnNames="ID"/>
-</changeSet>
+    <changeSet id="4" author="kyamran" runOnChange="true">
+        <createTable tableName="Post_Labels">
+            <column name="PostID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LabelID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
-<changeSet id="6" author="kyamran" runOnChange="true">
-    <addForeignKeyConstraint constraintName="fk_postlabels_posts"
-                             baseTableName="Post_Labels" baseColumnNames="PostID"
-                             referencedTableName="Posts" referencedColumnNames="ID"/>
-    <addForeignKeyConstraint constraintName="fk_postlabels_labels"
-                             baseTableName="Post_Labels" baseColumnNames="LabelID"
-                             referencedTableName="Labels" referencedColumnNames="ID"/>
-</changeSet>
+    <changeSet id="5" author="kyamran" runOnChange="true">
+        <addForeignKeyConstraint baseTableSchemaName="" baseTableName="Posts" baseColumnNames="WriterId"
+                                 constraintName="fk_posts_writers" referencedTableSchemaName=""
+                                 referencedTableName="Writers" referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet id="6" author="kyamran" runOnChange="true">
+        <addForeignKeyConstraint baseTableSchemaName="" baseTableName="Post_Labels" baseColumnNames="PostID"
+                                 constraintName="fk_postlabels_posts" referencedTableSchemaName=""
+                                 referencedTableName="Posts" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableSchemaName="" baseTableName="Post_Labels" baseColumnNames="LabelID"
+                                 constraintName="fk_postlabels_labels" referencedTableSchemaName=""
+                                 referencedTableName="Labels" referencedColumnNames="ID"/>
+    </changeSet>
+
 </databaseChangeLog>
-
-
